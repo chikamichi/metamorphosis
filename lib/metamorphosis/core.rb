@@ -104,7 +104,7 @@ module Metamorphosis
     #                    when defining s/m/p/wyoucallit
     # - ?
 
-    @plugins_path = @base_path + "kirke"
+    @plugins_path = @base_path + "circe"
 
     # TODO
     # peut-être à terme à bouger dans une méthode self.init
