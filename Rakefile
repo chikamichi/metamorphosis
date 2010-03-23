@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'yard'
 
 begin
   require 'jeweler'
@@ -42,8 +43,9 @@ task :test => :check_dependencies
 
 task :default => :test
 
-#require 'rake/rdoctask'
-require 'hanna/rdoctask' # http://github.com/mislav/hanna
+require 'rake/rdoctask'
+#require 'hanna/rdoctask' # http://github.com/mislav/hanna
+require 'sdoc'
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
@@ -53,4 +55,11 @@ Rake::RDocTask.new do |rdoc|
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
   rdoc.options << '--webcvs=http://github.com/chikamichi/metamorphosis/tree/master/'
+  rdoc.options << '--line-numbers' << '--inline-source' # sdoc mandatory options
+  rdoc.template = 'direct' # lighter template used on railsapi.com
+end
+
+YARD::Rake::YardocTask.new do |t|
+  #t.files   = ['lib/**/*.rb', OTHER_PATHS]   # optional
+  #t.options = ['--any', '--extra', '--opts'] # optional
 end
