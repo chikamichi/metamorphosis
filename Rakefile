@@ -42,12 +42,15 @@ task :test => :check_dependencies
 
 task :default => :test
 
-require 'rake/rdoctask'
+#require 'rake/rdoctask'
+require 'hanna/rdoctask' # http://github.com/mislav/hanna
 Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
-  rdoc.rdoc_dir = 'rdoc'
+  rdoc.main = "README.md"
+  rdoc.rdoc_dir = 'doc'
   rdoc.title = "metamorphosis #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.options << '--webcvs=http://github.com/chikamichi/metamorphosis/tree/master/'
 end
