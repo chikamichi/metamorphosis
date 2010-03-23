@@ -16,6 +16,18 @@ Gem::Specification.new do |s|
     "LICENSE",
      "README.md"
   ]
+  s.files = [
+    ".document",
+     ".gitignore",
+     "LICENSE",
+     "README.md",
+     "Rakefile",
+     "VERSION",
+     "lib/ext/ext.rb",
+     "lib/metamorphosis.rb",
+     "lib/metamorphosis/core.rb",
+     "metamorphosis.gemspec"
+  ]
   s.homepage = %q{http://github.com/chikamichi/metamorphosis}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
