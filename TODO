@@ -1,24 +1,24 @@
-* code:
+## Code
 
-  - Streamline plugins structure with InstanceMethods and ClassMethods autohooks.
-    Only InstanceMethods definitions are extended within PlugInit.
-  - Sreamline the vocabulary (for instance, rename PlugInit to something cooler).
-  - In plugins definition, get rid of the base namespace.
-  - Add support for a configuration file, merely a block:
-    - config do ... end
-    - config "A::Specific::Base" do ... end
-    The configuration file will reside under circe/ as config.rb and will be evaled
-    in Metamorphosis#self.extended.
-    config keywords: :only, :only_within, :except
-  - Add support for several plugins namespaces under circe/:
-      circe/base1/...
-      circe/base2/...
-      where base1 and base2 have extended Metamorphosis somehow.
-      The config file should then handle an argument to the config method, the
-      name of a base.
-  - Have the unpack method really bypassing the default extending convention.
-  - Someday, add support for (un)extending on the fly (BlankSlate layer?).
+* Streamline plugins structure with InstanceMethods and ClassMethods autohooks.
+  Only InstanceMethods definitions are extended within PlugInit.
+* Sreamline the vocabulary (for instance, rename PlugInit to something cooler).
+* In plugins definition, get rid of the base namespace.
+* Add support for a configuration file, merely a block:
+  * config do ... end
+  * config "A::Specific::Base" do ... end
+  The configuration file will reside under circe/ as config.rb and will be evaled
+  in Metamorphosis#self.extended.
+  config keywords: :only, :only_within, :except
+* Add support for several plugins namespaces under circe/:
+    circe/base1/...
+    circe/base2/...
+    where base1 and base2 have extended Metamorphosis somehow.
+    The config file should then handle an argument to the config method, the
+    name of a base.
+* Have the unpack method really bypassing the default extending convention.
+* Someday, add support for (un)extending on the fly (BlankSlate layer?).
 
-* documentation:
+## Documentation
 
-  - switch from RDoc to YARD (rdoc.info)
+* switch from RDoc to YARD (rdoc.info)

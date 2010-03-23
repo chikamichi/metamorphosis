@@ -60,6 +60,6 @@ Rake::RDocTask.new do |rdoc|
 end
 
 YARD::Rake::YardocTask.new do |t|
-  #t.files   = ['lib/**/*.rb', OTHER_PATHS]   # optional
+  t.files   = ['lib/**/*.rb', 'README.md', 'TODO', 'LICENSE']
   #t.options = ['--any', '--extra', '--opts'] # optional
 end
