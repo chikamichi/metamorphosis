@@ -1,0 +1,14 @@
+.bundle
+TAGS
+*~
+.#*
+bin
+gems
+wip/*
+*.sw?
+.DS_Store
+coverage
+rdoc
+pkg
+test.rb
+plugins
