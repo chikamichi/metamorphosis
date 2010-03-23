@@ -1,3 +1,5 @@
+require 'pathname'
+
 # Metamorphosis. Let's do some differentiation!
 # 
 # Metamorphosis is a generic plugins system. Using Metamorphosis,
@@ -59,23 +61,50 @@ module Metamorphosis
 
   # This hash holds the plugins hooks. Its structure is like this:
   # a module or class within the receiver => array of plugins performing redef on it
-  def self.redefinable
+  def self.redefinable #:nodoc:
     @redefinable ||= {}
   end
 
-  # A list of all active plugins for the receiver.
-  def self.plugins
+  # path
+  def self.base_path #:nodoc:
+    @base_path ||= nil
+  end
+
+  def self.plugins_path #:nodoc:
+    @plugins_path ||= nil
+  end
+
+  def self.plugins #:nodoc:
     @plugins ||= []
   end
 
+  # A list of all active plugins.
   def plugins
     Metamorphosis.plugins
   end
 
   def self.extended base #:nodoc:
-    #puts "Initializing Pluginable..."
+    # the receiver is the extended module or class
+    # which is willing to metamorphose
     @receiver = base
-    #puts @receiver
+
+    # paths of the receiver file and receiver plugins
+    @base_path = Pathname.new(File.expand_path($0)).dirname
+
+    # TODO
+    # read metamorphosis config file
+    # config keys:
+    # - :only
+    # - :only_under
+    # - :except
+    # - :location    => location of the spell/metamorphose/plugins/whateveryoucallit files
+    #                   (defaults to "kirke", the greek godess of transformation, not
+    #                    the "guy" from Star Trek)
+    #                    This string is used, capitalized, as the module name to be used
+    #                    when defining s/m/p/wyoucallit
+    # - ?
+
+    @plugins_path = @base_path + "kirke"
 
     # TODO
     # peut-être à terme à bouger dans une méthode self.init
@@ -88,9 +117,6 @@ module Metamorphosis
     base.fetch_nested(recursive: true) do |e|
       redefinable[e] ||= [] unless e.name =~ /#{@receiver}::Plugin/
     end
-    #puts "> redefinable: #{redefinable.inspect}"
-    #puts "Plugins init done."
-    #puts
   end
 
   # Activate a plugin.
@@ -122,7 +148,7 @@ module Metamorphosis
     plugin_name = plugin_name.capitalize
 
     begin
-      require $PLUGINS_PATH + "/" + plugin_name.downcase
+      require Metamorphosis.plugins_path.to_s + "/" + plugin_name.downcase
     rescue LoadError => e
       puts e
       abort "You tried to load a plugin which does not exist (#{plugin_name})."
@@ -132,7 +158,7 @@ module Metamorphosis
       plugin = Metamorphosis.receiver.const_get("Plugin").const_get(plugin_name)
     rescue => e
       puts e
-      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{$PLUGINS_PATH + "/" + plugin_name.downcase + ".rb"}"
+      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{Metamorphosis.base_path + "/" + plugin_name.downcase + ".rb"}"
     end
 
     Metamorphosis.plugins << plugin_name
