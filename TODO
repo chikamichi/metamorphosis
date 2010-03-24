@@ -1,11 +1,14 @@
 ## Code
 
-  * Streamline plugins structure with InstanceMethods and ClassMethods autohooks.
+  * Streamline spells structure with InstanceMethods and ClassMethods autohooks.
     Only InstanceMethods definitions are extended with Metamorphosis::RedefInit.
 
   * In plugins definition, get rid of the base namespace (receiver).
 
-  * Add support for a configuration file, using Configliere.
+  * "CamelCased", "Under_scored", :symbol and "Capitalized string with spaces"
+    activate support.
+
+  * Add support for a default configuration file, using Configliere.
     The configuration file will be at ./.metamorphosis/config.yml.
     Config keywords: :only, :only_within, :except, :namespace
     And validations on those settings when loading (Configliere does that!)
@@ -23,7 +26,7 @@
   * Create self.load, called by self.extended, and move behavior from the latter
     to the former so as to gain some modularity (we may want to reload… one day).
 
-  ---------------------------------------------------------------------------------
+  -------------------------- someday… -------------------------------
 
   * Add support for several plugins namespaces under spells/
       ./spells/mybase1/
@@ -44,8 +47,11 @@
       in ./.metamorphosis/config.yml, then the path is
       ./plugins/mybase/
 
-  * Someday, add support for (un)extending on the fly (using a BlankSlate layer?).
+  * Add support for (un)extending on the fly (using a BlankSlate layer?).
 
 ## Documentation
 
-  * Switch from RDoc to YARD (rdoc.info).
+## Feedback
+
+  * Write a blog post about it on heroku :)
+
