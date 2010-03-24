@@ -1,5 +1,7 @@
 # Metamorphosis. Kykeons, spells, plugins, whatever?
 
+Note: you may want to read this file at [yardoc.org/docs/chikamichi-metamorphosis](http://yardoc.org/docs/chikamichi-metamorphosis "YARDoc.org").
+
 ## Synopsis
 
 Metamorphosis provides you with a generic "plugins" system. Using Metamorphosis,
