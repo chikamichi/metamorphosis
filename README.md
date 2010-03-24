@@ -2,16 +2,16 @@
 
 Metamorphosis provides you with a generic "plugins" system. Using Metamorphosis,
 a module or a class is able to alter and/or extend its original behavior at
-run-time.
+run-time, in a standardized, programmer-friendly way.
 
 Typical use-cases may be:
-- you wrote a tiny yet powerful application, and would like to be able to extend
+* you wrote a tiny yet powerful application, and would like to be able to extend
 its functionnalities without clutering the code base with loads of specific stuff;
-- you wrote your very own CMS and would like your users to be able to write and
+* you wrote your very own CMS and would like your users to be able to write and
 share some plugins;
-- you are using software someone else wrote and would like to be able to customize
+* you are using software someone else wrote and would like to be able to customize
 your running instance with some very specific features only you care about;
-- you wrote a script which would gain on being able to alter its behavior at
+* you wrote a script which would gain on being able to alter its behavior at
 run-time and per-module or even per-class.
 
 Let's review a common pattern
