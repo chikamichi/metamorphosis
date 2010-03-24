@@ -1,5 +1,3 @@
-require 'pathname'
-
 # Metamorphosis. Let's do some differentiation!
 # 
 # Metamorphosis is a generic plugins system. Using Metamorphosis,
@@ -89,7 +87,7 @@ module Metamorphosis
     @receiver = base
 
     # paths of the receiver file and receiver plugins
-    @base_path = Pathname.new(File.expand_path($0)).dirname
+    @base_path = base_path.to_s
 
     # TODO
     # read metamorphosis config file
@@ -98,8 +96,7 @@ module Metamorphosis
     # - :only_under
     # - :except
     # - :location    => location of the spell/metamorphose/plugins/whateveryoucallit files
-    #                   (defaults to "kirke", the greek godess of transformation, not
-    #                    the "guy" from Star Trek)
+    #                   (defaults to "circe", the greek godess of transformation)
     #                    This string is used, capitalized, as the module name to be used
     #                    when defining s/m/p/wyoucallit
     # - ?
