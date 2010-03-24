@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
      "lib/ext/ext.rb",
      "lib/metamorphosis.rb",
      "lib/metamorphosis/core.rb",
+     "lib/metamorphosis/helpers.rb",
      "metamorphosis.gemspec"
   ]
   s.homepage = %q{http://github.com/chikamichi/metamorphosis}

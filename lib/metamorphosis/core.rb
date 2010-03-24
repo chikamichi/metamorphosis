@@ -47,79 +47,21 @@
 module Metamorphosis
   extend self
 
-  # FIXME
-  # en fait, à part activate, je dois pouvoir tout passer en private, non ?
-
-  # FIXME
-  # le transformer en attr_reader peut-être ?
-  # The base module or class which called extend Pluginable
-  def self.receiver
-    @receiver ||= nil
-  end
-
-  # This hash holds the plugins hooks. Its structure is like this:
-  # a module or class within the receiver => array of plugins performing redef on it
-  def self.redefinable #:nodoc:
-    @redefinable ||= {}
-  end
-
-  # path
-  def self.base_path #:nodoc:
-    @base_path ||= nil
-  end
-
-  def self.plugins_path #:nodoc:
-    @plugins_path ||= nil
-  end
-
-  def self.plugins #:nodoc:
-    @plugins ||= []
-  end
-
-  # A list of all active plugins.
-  def plugins
-    Metamorphosis.plugins
-  end
-
-  def self.extended base #:nodoc:
-    # the receiver is the extended module or class
-    # which is willing to metamorphose
-    @receiver = base
-
-    # paths of the receiver file and receiver plugins
-    @base_path = base_path.to_s
-
-    # TODO
-    # read metamorphosis config file
-    # config keys:
-    # - :only
-    # - :only_under
-    # - :except
-    # - :location    => location of the spell/metamorphose/plugins/whateveryoucallit files
-    #                   (defaults to "circe", the greek godess of transformation)
-    #                    This string is used, capitalized, as the module name to be used
-    #                    when defining s/m/p/wyoucallit
-    # - ?
-
-    @plugins_path = @base_path + "circe"
-
-    # TODO
-    # peut-être à terme à bouger dans une méthode self.init
-    # de façon à pouvoir découpler le extend de l'initialization,
-    # ce qui permettrait entre temps de configurer un peu son
-    # Pluginable (options :only, :except, etc.)
-    # Ou sinon, garder ça ici et mettre la conf dans un fichier tiers,
-    # à lire juste avant le fetch_nested de façon à pouvoir affiner la
-    # clause unless
-    base.fetch_nested(recursive: true) do |e|
-      redefinable[e] ||= [] unless e.name =~ /#{@receiver}::Plugin/
-    end
-  end
+  # the module or class extending Metamorphosis
+  mattr_accessor :receiver
+  # path of file where the receiver is defined
+  mattr_accessor :base_path
+  # path of the spells directory associated to the receiver
+  mattr_accessor :plugins_path
+  # a list of all modules or classes allowed to be altered by spells
+  mattr_accessor :redefinable
+  # a list of all active spells
+  mattr_accessor :plugins
 
   # Activate a plugin.
   #
   # Must be called by the receiver, ie. the module or class which called
-  # <code>extend Pluginable</code>.
+  # <code>extend Metamorphosis</code>.
   #
   #   module MyProject
   #     extend Pluginable
@@ -136,83 +78,91 @@ module Metamorphosis
   #     end
   #   end
   #
+  # @param [String] plugin_name the plugin name
   def activate plugin_name
-    # be careful about self here, need to explicit Pluginable
+    Metamorphosis.activate!(plugin_name, self)
+  end
 
-    # TODO: gérer en arguments les chaines et les symboles,
-    # camelcased on underscored (faire un helper private)
+  def self.extended base
+    self.receiver = base
+    self.base_path = instance_base_path.to_s
+    self.plugins_path = self.base_path + "/" + "spells"
+    self.plugins = []
 
+    # TODO
+    # at this point, read metamorphosis config file (.metamorphosis.yml)
+    # which may define some config keys:
+    # - :only        => array of Const; only those consts will be added to :redefinable
+    # - :only_under  => look out for nested module/class only under one or several
+    #                   specified module(s)/class(es) (makes your public API really explicit)
+    # - :except      => array of Const to bypass when building :redefinable
+    # - :namespace   => name of the spell/metamorphose/plugins/whateveryoucallit namespace
+    #                   (defaults to "spells", but I guess many will go for "plugins")
+    #                   This string is used, capitalized, as the module name to be used
+    #                   when defining s/m/p/wyoucallit
+    # And add the possibility to have several config files (one by subfolder under spells/)
+
+    self.redefinable = {}
+    self.receiver.fetch_nested(recursive: true) do |e|
+      self.redefinable[e] ||= [] unless e.name =~ /#{self.receiver}::Spells/
+    end
+  end
+
+  # The activation process really takes place here.
+  #
+  # Called by <tt>activate</tt> which is part of the public API.
+  # This method registers hooks between the receiver and the plugin,
+  # taking general or specific configuration settings into account.
+  #
+  # @param [String]   plugin_name the plugin name
+  # @param [Constant] receiver    the receiver
+  def self.activate!(plugin_name, receiver)
+    # TODO: handle camelcased or underscored or capitalized plugin name
     plugin_name = plugin_name.capitalize
 
+    # TODO: read config file (generic or specific)
+
     begin
-      require Metamorphosis.plugins_path.to_s + "/" + plugin_name.downcase
+      require self.plugins_path.to_s + "/" + plugin_name.downcase
     rescue LoadError => e
       puts e
       abort "You tried to load a plugin which does not exist (#{plugin_name})."
     end
     
     begin
-      plugin = Metamorphosis.receiver.const_get("Plugin").const_get(plugin_name)
+      plugin = self.receiver.const_get("Spells").const_get(plugin_name)
     rescue => e
       puts e
-      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{Metamorphosis.base_path + "/" + plugin_name.downcase + ".rb"}"
+      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{self.base_path + "/" + plugin_name.downcase + ".rb"}"
     end
 
-    Metamorphosis.plugins << plugin_name
+    self.plugins << plugin_name
     plugin.fetch_nested(recursive: true, only: :modules) do |e|
       e = e.name.split("::").last
-      e = Metamorphosis.receiver.const_get e
+      e = self.receiver.const_get e
 
-      #puts
-      e.extend ::Metamorphosis::PluginInit
-      #puts
-      Metamorphosis.redefinable[e] << Metamorphosis.receiver.const_get("Plugin").const_get(plugin_name) if Metamorphosis.redefinable.has_key? e
+      e.extend self::RedefInit
+      self.redefinable[e] << self.receiver.const_get("Spells").const_get(plugin_name) if self.redefinable.has_key? e
     end
-    plugin.unpack if plugin.respond_to?(:unpack)
-    #puts Metamorphosis.redefinable.inspect
+
+    # TODO: unpack as an alternative to the default hook processing
+    #plugin.unpack if plugin.respond_to?(:unpack)
   end
-
-  # TODO
-  # idées :
-  # - utiliser un hack type unextend (cf ext/ext.rb)
-  # - http://ruby-doc.org/core/classes/Module.html#M001654 pour #undef_method, #define_method
-  # - gérer les plugins avec BlankSlate (http://github.com/masover/blankslate) : je pense que c'est le mieux,
-  #   mais ça demande un peu de boulot.
-  #def shutdown plugin_name
-    #p self.class_eval("class << self; self; end").ancestors.inspect
-    #plugins_list = self.plugins
-    #self.unextend
-    #p self.class_eval("class << self; self; end").ancestors.inspect
-  #end
-
-  # TODO
-  # def bypass
-  # end
 
   # This module is responsible for extending class instances with
   # new behavior defined by some plugin(s). It's the responsability
-  # of the plugins to call super or not so as to fallback on the
-  # original behavior: this module only has the hooks up and running.
-  module PluginInit
-    #def self.extended base
-      #puts "PluginInit extended by #{base}"
-      #puts base.class_eval("class << self; self; end").ancestors.inspect
-    #end
-
+  # of the plugins to call super so as to fallback on the original
+  # behavior: this module only has the auto-hooks up and runing.
+  module RedefInit
     # Redefine initialize/new so as to call extend on new instances.
+    # This allows for per-instance behavior redefinitions.
     def new *args, &block
-      #puts "--------- Initializing through PluginInit for #{self}"
       o = super
-      #puts "super: #{o}"
-      #puts "self: #{self}"
-      #puts Metamorphosis.redefinable
-      #puts Metamorphosis.redefinable[self].first.class
-      #puts "---------"
-      #puts o.instance_eval("class << self; self; end").ancestors.inspect
+
       Metamorphosis.redefinable[self].reverse.each do |plugin_module|
         o.extend(plugin_module.const_get(self.name.split("::").last)) 
       end unless Metamorphosis.redefinable[self].empty?
-      #puts o.instance_eval("class << self; self; end").ancestors.inspect
+
       o
     end
   end

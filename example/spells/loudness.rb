@@ -1,5 +1,5 @@
 module Project
-  module Plugin
+  module Spells
     module Loudness
       module Speaker
         def say(what)

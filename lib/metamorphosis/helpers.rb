@@ -1,12 +1,13 @@
-# stollen from Sinatra:
 module Metamorphosis
   # Goal: retrieve the caller base path, that is the very place where
   # the script extending Metamorphosis is located. This is the location
   # of Metamorphosis local "circe" (by default) configuration directory.
 
+  # stollen from Sinatra:
+  
   # TODO/FIXME: add configuration option to add custom callers regexp
   CALLERS_TO_IGNORE = [
-    /\/metamorphosis(\/(core|helpers)))?\.rb$/, # all metamorphosis code
+    /\/metamorphosis(\/(core|helpers))?\.rb$/, # all metamorphosis code
     #/\(.*\)/, # any generated code
     /custom_require\.rb$/, # rubygems require hacks
   ]
@@ -25,7 +26,7 @@ module Metamorphosis
     caller_locations.map { |file,line| file }
   end
 
-  def self.base_path
-    Pathname.new(caller_files.first).realpath.dirname
+  def self.instance_base_path
+    Pathname.new(caller_files.first).realpath.dirname.to_s
   end
 end

@@ -1,5 +1,5 @@
 module Project
-  module Plugin
+  module Spells
     module Backward
       #def self.unpack
         ## ne sert à rien dans cet exemple, mais pourrait être utile
