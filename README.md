@@ -165,6 +165,7 @@ call `super` and will be the first activated plugin.
 * It is not possible to deactivate a plugin at the present time, without bootstraping
   the receiver again. Hard work forthcoming, as it's not an easy process.
 * The TODO list is not empty!
+* Test-Driven Development is all about writing the tests *before*. Is it?
 
 ## Note on Patches/Pull Requests
  
