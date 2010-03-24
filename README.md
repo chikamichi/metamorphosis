@@ -5,6 +5,7 @@ a module or a class is able to alter and/or extend its original behavior at
 run-time, in a standardized, programmer-friendly way.
 
 Typical use-cases may be:
+
 * you wrote a tiny yet powerful application, and would like to be able to extend
 its functionnalities without clutering the code base with loads of specific stuff;
 * you wrote your very own CMS and would like your users to be able to write and
