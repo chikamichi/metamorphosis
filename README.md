@@ -53,7 +53,7 @@ Let's look at a common pattern:
           a.say "hello world again!" # => hello world again!
           # Goodness me!
           # Well, actually, the Backward plugin affects Speaker's instances,
-          # but only thoses defined from the time it is activated.
+          # but only those defined from the time it is activated on.
 
           Speaker.new.say "hello then" # => neht olleh
         end
