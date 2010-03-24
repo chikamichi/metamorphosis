@@ -4,20 +4,24 @@
     Only InstanceMethods definitions are extended with Metamorphosis::RedefInit.
 
   * In plugins definition, get rid of the base namespace (receiver).
+
+  * Add support for a configuration file, using Configliere.
+    The configuration file will be at ./.metamorphosis/config.yml.
+    Config keywords: :only, :only_within, :except, :namespace
+    And validations on those settings when loading (Configliere does that!)
   
-  * Allow to override the default "spells" convention ("plugins" for instance :))
+  * Allow to override the default "Spells" convention (to "Plugins" for instance :))
     It should create the appropriate dynamic methods, for instance
     receiver.spells -> receiver.plugins (but keep the original alias too).
 
-  * Have the unpack method really bypassing the default extending convention.
+  * Propagate the config object to the receiver. Or maybe even the instance
+    methods of the Config module so it has full control over the plugin conf?
+    Not really useful though, just for the sake of reflection.
+
+  * Have the unpack method really bypass the default extending/merging behavior.
 
   * Create self.load, called by self.extended, and move behavior from the latter
     to the former so as to gain some modularity (we may want to reload… one day).
-
-  * Add support for a configuration file, using Configliere.
-    The configuration file will be ./.metamorphosis/config.yml.
-    config keywords: :only, :only_within, :except, :namespace
-    And validations on thoses settings when loading (Configliere does that!)
 
   ---------------------------------------------------------------------------------
 
