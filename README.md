@@ -17,7 +17,6 @@ run-time and per-module or even per-class.
 
 Let's review a common pattern
 
-    :::ruby
     module MyProject
       # So let's say a plugins system would be nice for MyProject...
       # MyProject is called the receiver, because it extends Metamorphosis:
