@@ -56,27 +56,33 @@ Let's review a common pattern:
 
 Here's how the Backward plugin is defined:
 
-    module Spells
-      module Speaker
-        module InstanceMethods
-          def say something
-            super something.reverse
+    module MyProject
+      module Spells
+        module Speaker
+          module InstanceMethods
+            def say something
+              super something.reverse
+            end
           end
         end
       end
     end
 
-Some more examples are available under the `example` directory. *Spells* is to
-Metamorphosis what you may brand as *plugins*. That's the default, but it can easily
-be changed to any custom value, allowing you to tailor the DSL.
+*Some more examples are available under the `example` directory.*
 
-So you just open the `Spells` module, then open a module which name mimics the name
-of whatever receiver's module or class you want to hook-in (`Speaker`). Here comes a
-piece of *Convention*: we want to modify instances behavior, so let's make that
-explicit and open an `InstanceMethods` module. Then we talk backward.
+Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default, but
+it can easily be changed to any custom value, allowing you to tailor the DSL to your
+needs.
+
+So you just open `MyProject` and a new `Spells` module, then open a module which name
+is the same as whatever receiver's module or class you want to hook-in (`Speaker`).
+Here comes a piece of *Convention*: we want to modify instances behavior, so let's make
+that explicit and open an `InstanceMethods` module. Then, we talk backward!
 
 We could have merely redefine `say` but instead, we called `super` with a new
 argument. It's just to illustrate how cool is this: `super`. No. More. Alias.
+This example is a bit verbose as there's only one redefinition, yet it should
+feel confortable.
 
 ## Inheritance everywhere!
 
