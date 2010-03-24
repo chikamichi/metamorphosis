@@ -1,5 +1,7 @@
 # Metamorphosis. Kykeons, spells, plugins, whatever?
 
+## Synopsis
+
 Metamorphosis provides you with a generic "plugins" system. Using Metamorphosis,
 a module or a class is able to alter and/or extend its original behavior at
 run-time, in a standardized, programmer-friendly way.
@@ -15,7 +17,9 @@ your running instance with some very specific features only you care about;
 * you wrote a script which would gain on being able to alter its behavior at
 run-time and per-module or even per-class.
 
-Let's review a common pattern:
+## First example
+
+Let's look at a common pattern:
 
     module MyProject
       # So let's say a plugins system would be nice for MyProject...
