@@ -8,7 +8,9 @@ wip/*
 *.sw?
 .DS_Store
 coverage
+doc
 rdoc
+.yardoc
 pkg
 test.rb
-plugins
+spells
