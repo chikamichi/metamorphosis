@@ -1,4 +1,4 @@
-# Metamorphosis. Kykeon cooked by Circe. Or just plugins.
+# Metamorphosis. Kykeons, spells, plugins, whatever?
 
 Metamorphosis provides you with a generic "plugins" system. Using Metamorphosis,
 a module or a class is able to alter and/or extend its original behavior at
@@ -141,7 +141,7 @@ add some control on top of it (be it automatic or by peer-reviewing). Forthcomin
 refinements on the quantity of information Metamorphosis shares with the receiver
 should allow you to perform fine-checks, wait & see.
 
-# Care about your parents, they made you (or not?)
+## Care about your parents, they made you (or not?)
 
 Yet plugins are cool stuff and we hardly eat kykeon nowadays, so let's talk about
 plugins anyway.
@@ -163,8 +163,8 @@ call `super` and will be the first activated plugin.
 ## Caveats
 
 * It is not possible to deactivate a plugin at the present time, without bootstraping
-  the receiver again. Hard work forthcoming.
-* The TODO list is not empty.
+  the receiver again. Hard work forthcoming, as it's not an easy process.
+* The TODO list is not empty!
 
 ## Note on Patches/Pull Requests
  
