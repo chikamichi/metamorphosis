@@ -15,7 +15,7 @@ your running instance with some very specific features only you care about;
 * you wrote a script which would gain on being able to alter its behavior at
 run-time and per-module or even per-class.
 
-Let's review a common pattern
+Let's review a common pattern:
 
     module MyProject
       # So let's say a plugins system would be nice for MyProject...
@@ -26,29 +26,33 @@ Let's review a common pattern
       # By doing so, it gains some new functionalities related to plugins definition.
       # At this point, MyProject's internals are exposed in a standardized way
       # to Metamorphosis DSL. Both Speaker and Server modules can be altered
-      # by plugins.
+      # by plugins (by default, highly customizable).
 
       module Speaker
         def say something
-          puts "say: #{something}"
+          puts "#{something}"
         end
       end
 
       module Server
-        a = Speaker.new
-        a.say "hello world!" # => hello world!
+        def self.start
+          a = Speaker.new
+          a.say "hello world!" # => hello world!
 
-        # Ok, talking backward is cool. Let's do that.
-        MyProject.activate "backward"
+          # Ok, talking backward is cool. Let's do that.
+          MyProject.activate "backward"
 
-        a.say "hello world again!" # => hello world again!
-        # Goodness me!
-        # Well, actually, the Backward plugin affects Speaker's instances,
-        # but only thoses defined from the time it is activated.
+          a.say "hello world again!" # => hello world again!
+          # Goodness me!
+          # Well, actually, the Backward plugin affects Speaker's instances,
+          # but only thoses defined from the time it is activated.
 
-        Speaker.new.say "hello then" # => neht olleh
+          Speaker.new.say "hello then" # => neht olleh
+        end
       end
     end
+
+    MyProject::Server.start # see outputs as inline comments above
 
 Here's how the Backward plugin is defined:
 
