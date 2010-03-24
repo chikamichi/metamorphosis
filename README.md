@@ -4,11 +4,11 @@ Note: you may want to read this file on [rdoc.info](http://rdoc.info/projects/ch
 
 ## Synopsis
 
-Metamorphosis provides you with a generic "plugins" system. Using Metamorphosis,
-a module or a class is able to alter and/or extend its original behavior at
-run-time, in a standardized, programmer-friendly way.
+Metamorphosis (MMP) provides you with a generic "plugins" system. Using Metamorphosis,
+a module or a class is able to alter and/or extend its original behavior at run-time,
+in a standardized, programmer-friendly way.
 
-Typical use-cases may be:
+Typical use-cases:
 
 * you wrote a tiny yet powerful application, and would like to be able to extend
 its functionnalities without clutering the code base with loads of specific stuff;
@@ -16,20 +16,22 @@ its functionnalities without clutering the code base with loads of specific stuf
 share some plugins;
 * you are using software someone else wrote and would like to be able to customize
 your running instance with some very specific features only you care about;
-* you wrote a script which would gain on being able to alter its behavior at
-run-time and per-module or even per-class.
+* you wrote a script which would benefit of being able to modify its behavior at
+on a per-module or per-class basis.
 
 ## First example
 
 Let's look at a common pattern:
 
+    # ./myproject.rb
+    require 'metamorphosis'
+
     module MyProject
       # So let's say a plugins system would be nice for MyProject...
-      # MyProject is called the receiver, because it extends Metamorphosis:
 
       extend Metamorphosis
 
-      # By doing so, it gains some new functionalities related to plugins definition.
+      # By extending MMP, MyProject gains some new functionalities related to plugins definition.
       # At this point, MyProject's internals are exposed in a standardized way
       # to Metamorphosis DSL. Both Speaker and Server modules can be altered
       # by plugins (by default, highly customizable).
@@ -62,6 +64,7 @@ Let's look at a common pattern:
 
 Here's how the Backward plugin is defined:
 
+    # ./spells/backward.rb
     module MyProject
       module Spells
         module Speaker
@@ -73,8 +76,6 @@ Here's how the Backward plugin is defined:
         end
       end
     end
-
-*Some more examples are available under the `example` directory.*
 
 Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default, but
 it can easily be changed to any custom value, allowing you to tailor the DSL to your
