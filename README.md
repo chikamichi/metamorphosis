@@ -1,6 +1,6 @@
 # Metamorphosis. Kykeons, spells, plugins, whatever?
 
-Note: you may want to read this file at [yardoc.org/docs/chikamichi-metamorphosis](http://yardoc.org/docs/chikamichi-metamorphosis "YARDoc.org").
+Note: you may want to read this file on [rdoc.info](http://rdoc.info/projects/chikamichi/metamorphosis "YARDoc.org").
 
 ## Synopsis
 
