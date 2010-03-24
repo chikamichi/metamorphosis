@@ -1,21 +1,47 @@
 ## Code
 
-* Streamline plugins structure with InstanceMethods and ClassMethods autohooks.
-  Only InstanceMethods definitions are extended within RedefInit.
-* In plugins definition, get rid of the base namespace.
-* Add support for a configuration file, using Configliere.
-  The configuration file will be named .spells.yml.
-  config keywords: :only, :only_within, :except, :namespace
-* Add support for several plugins namespaces under spells/:
-    spells/base1/...
-    spells/base2/...
-    where base1 and base2 have extended Metamorphosis somehow.
-    The config file should then handle an argument to the config method, the
-    name of a base.
-* Allow to override the default "spells" convention ("plugin" for instance :)
-* Have the unpack method really bypassing the default extending convention.
-* Someday, add support for (un)extending on the fly (using a BlankSlate layer?).
+  * Streamline plugins structure with InstanceMethods and ClassMethods autohooks.
+    Only InstanceMethods definitions are extended with Metamorphosis::RedefInit.
+
+  * In plugins definition, get rid of the base namespace (receiver).
+  
+  * Allow to override the default "spells" convention ("plugins" for instance :))
+    It should create the appropriate dynamic methods, for instance
+    receiver.spells -> receiver.plugins (but keep the original alias too).
+
+  * Have the unpack method really bypassing the default extending convention.
+
+  * Create self.load, called by self.extended, and move behavior from the latter
+    to the former so as to gain some modularity (we may want to reload… one day).
+
+  * Add support for a configuration file, using Configliere.
+    The configuration file will be ./.metamorphosis/config.yml.
+    config keywords: :only, :only_within, :except, :namespace
+    And validations on thoses settings when loading (Configliere does that!)
+
+  ---------------------------------------------------------------------------------
+
+  * Add support for several plugins namespaces under spells/
+      ./spells/mybase1/
+      ./spells/mybase2/
+      where mybase1 and mybase2 have extended Metamorphosis and are using it
+      on their proper namespaces (may be the default value, or a similar
+      custom value, or two different values).
+      
+      If mybase is actually a complex constant, say Project::Public::API::FooBar,
+      the path is ./spells/project-public-api-foobar/
+
+      Specific configuration for mybase is stored at ./.metamorphosis/mybase.yml.
+      The config loader will load any *.yml file under ./.metamorphosis/ and
+      try to parse it as a valid config file. It will raise a LoadError if it fails
+      to do so (Configliere does not that by default, it "loads" an empty config).
+
+      If the namespace has been changed to a custom value (say "plugins")
+      in ./.metamorphosis/config.yml, then the path is
+      ./plugins/mybase/
+
+  * Someday, add support for (un)extending on the fly (using a BlankSlate layer?).
 
 ## Documentation
 
-* switch from RDoc to YARD (rdoc.info)
+  * Switch from RDoc to YARD (rdoc.info).
