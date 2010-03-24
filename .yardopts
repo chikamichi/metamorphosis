@@ -1,3 +1,5 @@
+lib/**/*.rb
+--title "metamorphosis. Kykeons, spells, plugins, whatever?"
 --protected
 --no-private
 --hide-void-return
