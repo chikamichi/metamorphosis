@@ -11,6 +11,8 @@ begin
     gem.email = "jd@vauguet.fr"
     gem.homepage = "http://github.com/chikamichi/metamorphosis"
     gem.authors = ["Jean-Denis Vauguet"]
+    gem.add_dependency "configliere", ">= 0.0.5"
+    gem.add_dependency "activesupport"
     #gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end

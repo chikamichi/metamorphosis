@@ -116,6 +116,9 @@ module Metamorphosis
   #
   # @param [String]   plugin_name the plugin name
   # @param [Constant] receiver    the receiver
+  # @raise [LoadError] if the spell file does not exist under the expected location
+  # @raise [StandardError] if the spell definition is invalid
+  # @see activate
   def self.activate!(plugin_name, receiver)
     # TODO: handle camelcased or underscored or capitalized plugin name
     plugin_name = plugin_name.capitalize
