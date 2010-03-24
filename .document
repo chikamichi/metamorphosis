@@ -1,4 +1,3 @@
-README.md
-bin/*
+lib/**/*.rb
+spec/**/*.rb
 features/**/*.feature
-LICENSE
