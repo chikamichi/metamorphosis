@@ -3,7 +3,11 @@ $:.unshift File.dirname(__FILE__) unless
 
 require 'pathname'
 require 'configliere'
-require 'active_support/core_ext/module/attribute_accessors' unless ENV['RAILS_ENV']
+
+unless ENV['RAILS_ENV']
+  require 'active_support/core_ext/module/attribute_accessors'
+  require 'active_support/core_ext/class/attribute_accessors'
+end
 
 require 'ext/ext'
 require 'metamorphosis/helpers'
