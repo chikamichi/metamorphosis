@@ -36,9 +36,11 @@ Let's look at a common pattern:
       # to Metamorphosis DSL. Both Speaker and Server modules can be altered
       # by plugins (by default, highly customizable).
 
-      module Speaker
-        def say something
-          puts "#{something}"
+      module FooBar
+        module Speaker
+          def say something
+            puts "#{something}"
+          end
         end
       end
 
@@ -54,6 +56,8 @@ Let's look at a common pattern:
           # Goodness me!
           # Well, actually, the Backward plugin affects Speaker's instances,
           # but only those defined from the time it is activated on.
+          # If you want to catch previously existing instances, call:
+          # MyProject.activate "backward", :retroactive => true
 
           Speaker.new.say "hello then" # => neht olleh
         end
@@ -67,10 +71,12 @@ Here's how the Backward plugin is defined:
     # ./spells/backward.rb
     module MyProject
       module Spells
-        module Speaker
-          module InstanceMethods
-            def say something
-              super something.reverse
+        module Foo
+          module Speaker
+            module InstanceMethods
+              def say something
+                super something.reverse
+              end
             end
           end
         end
@@ -81,15 +87,16 @@ Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default
 it can easily be changed to any custom value, allowing you to tailor the DSL to your
 needs.
 
-So you just open `MyProject` and a new `Spells` module, then open a module which name
-is the same as whatever receiver's module or class you want to hook-in (`Speaker`).
+So you just open `MyProject` and a new `Spells` module, then open module(s) which name(s)
+is(are) the same as whatever receiver's module(s) or class(s) you want to hook-in (`Speaker`).
 Here comes a piece of *Convention*: we want to modify instances behavior, so let's make
 that explicit and open an `InstanceMethods` module. Then, we talk backward!
 
 We could have merely redefine `say` but instead, we called `super` with a new
-argument. It's just to illustrate how cool is this: `super`. No. More. Alias.
+argument. It's just to illustrate how cool is this: `super`. No. More. Aliasing.
+
 This example is a bit verbose as there's only one redefinition, yet it should
-feel confortable.
+feel confortable and have you started.
 
 ## Inheritance everywhere!
 

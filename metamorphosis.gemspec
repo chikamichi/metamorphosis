@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Jean-Denis Vauguet"]
-  s.date = %q{2010-03-24}
+  s.date = %q{2010-03-25}
   s.description = %q{Metamorphosis is a generic plugins system. Using Metamorphosis, a module or a class is able to alter and/or extend its original behavior at will.}
   s.email = %q{jd@vauguet.fr}
   s.extra_rdoc_files = [
@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     ".yardopts",
      "LICENSE",
      "README.md",
      "Rakefile",

@@ -7,7 +7,7 @@ module Metamorphosis
   mattr_accessor :base_path
   # path of the spells directory associated to the receiver
   mattr_accessor :plugins_path
-  # a list of all modules or classes allowed to be altered by spells
+  # a list of all modules and classes supporting redefinitions
   mattr_accessor :redefinable
   # a list of all active spells
   mattr_accessor :plugins
@@ -33,8 +33,8 @@ module Metamorphosis
   #   end
   #
   # @param [String] plugin_name the plugin name
-  def activate plugin_name
-    Metamorphosis.activate!(plugin_name, self)
+  def activate plugin_name, *syms
+    Metamorphosis.activate!(plugin_name, self, syms)
   end
 
   def self.extended base
@@ -56,6 +56,8 @@ module Metamorphosis
     #                   when defining s/m/p/wyoucallit
     # And add the possibility to have several config files (one by subfolder under spells/)
 
+    # store each module/class const under the receiver, discarding Spells btw
+    # TODO: take options :only and :except in account
     self.redefinable = {}
     self.receiver.fetch_nested(recursive: true) do |e|
       self.redefinable[e] ||= [] unless e.name =~ /#{self.receiver}::Spells/
@@ -73,37 +75,58 @@ module Metamorphosis
   # @raise [LoadError] if the spell file does not exist under the expected location
   # @raise [StandardError] if the spell definition is invalid
   # @see activate
-  def self.activate!(plugin_name, receiver)
+  def self.activate!(plugin_name, receiver, *syms)
+    options = syms.flatten!.extract_options!
+
     # TODO: handle camelcased or underscored or capitalized plugin name
     plugin_name = plugin_name.capitalize
 
     # TODO: read config file (generic or specific)
 
+    # first, load the spell
     begin
-      require self.plugins_path.to_s + "/" + plugin_name.downcase
+      plugin_path = self.plugins_path.to_s + "/" + plugin_name.downcase
+      require plugin_path
     rescue LoadError => e
       puts e
       abort "You tried to load a plugin which does not exist (#{plugin_name})."
     end
     
+    # then, fetch the spell const
     begin
-      plugin = self.receiver.const_get("Spells").const_get(plugin_name)
+      plugin = self.receiver.constant("Spells").constant(plugin_name)
     rescue => e
       puts e
-      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{self.base_path + "/" + plugin_name.downcase + ".rb"}"
+      abort "Invalid definition for plugin \"#{plugin_name}\". Please check #{plugin_path + ".rb"}"
+    end
+
+    # process what's inside the spell definition
+    plugin.fetch_nested(recursive: true, only: :modules) do |e|
+      # let's say e is Receiver::Spells::ASpell::AModule::Nested::Again,
+      e = e.name.split("::")[3..-1].join("::")
+      e = self.receiver.constant e
+      # now e is referencing Receiver::AModule::Nested::Again
+
+      self.redefinable[e] << self.receiver.constant("Spells").constant(plugin_name) if self.redefinable.has_key? e
+      
+      if options[:retroactive]
+        ObjectSpace.each_object(e) { |x| p self.activate_on_instance x }
+      end
+
+      e.extend self::RedefInit
     end
 
     self.plugins << plugin_name
-    plugin.fetch_nested(recursive: true, only: :modules) do |e|
-      e = e.name.split("::").last
-      e = self.receiver.const_get e
-
-      e.extend self::RedefInit
-      self.redefinable[e] << self.receiver.const_get("Spells").const_get(plugin_name) if self.redefinable.has_key? e
-    end
 
     # TODO: unpack as an alternative to the default hook processing
     #plugin.unpack if plugin.respond_to?(:unpack)
+  end
+
+  def self.activate_on_instance instance
+    const = self.receiver.constant instance.class.name.split("::")[1..-1].join("::")
+    self.redefinable[const].each do |plugin_module|
+      instance.extend(plugin_module.constant(const.name.split("::")[1..-1].join("::")))
+    end unless self.redefinable[instance.class].empty?
   end
 
   # This module is responsible for extending class instances with
@@ -111,17 +134,22 @@ module Metamorphosis
   # of the plugins to call super so as to fallback on the original
   # behavior: this module only has the auto-hooks up and runing.
   module RedefInit
-    # Redefine initialize/new so as to call extend on new instances.
-    # This allows for per-instance behavior redefinitions.
+    # Redefine initialize/new so as to call extend [Plugins] on new
+    # instances. This allows for per-instance behavior redefinitions.
     def new *args, &block
       o = super
 
+      # notes: self is a const like Receiver::Some::Module,
+      # plugin_module is a const like Receiver::Spells::ASpell
       Metamorphosis.redefinable[self].reverse.each do |plugin_module|
-        o.extend(plugin_module.const_get(self.name.split("::").last)) 
+        o.extend(plugin_module.constant(self.name.split("::")[1..-1].join("::"))) 
       end unless Metamorphosis.redefinable[self].empty?
 
       o
     end
+
+    # TODO: handle case when object instanciation is not made using
+    # initialize but a custom instance method
   end
 end
 
