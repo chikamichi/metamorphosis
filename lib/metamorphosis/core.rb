@@ -18,6 +18,7 @@ module Metamorphosis
   # <code>extend Metamorphosis</code>.
   #
   # @param [String] spell_name the spell name
+  # @option opts [Boolean] :retroactive (false) wether the plugin should affect existing instances
   def activate spell_name, *syms
     Metamorphosis.activate!(spell_name, self, syms)
   end
