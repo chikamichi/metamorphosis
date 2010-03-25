@@ -2,15 +2,15 @@ module Metamorphosis
   extend self
 
   # the module or class extending Metamorphosis
-  mattr_accessor :receiver
+  mattr_reader :receiver
   # path of file where the receiver is defined
-  mattr_accessor :base_path
+  mattr_reader :base_path
   # path of the spells directory associated to the receiver
-  mattr_accessor :spells_path
+  mattr_reader :spells_path
   # a list of all modules and classes supporting redefinitions
-  mattr_accessor :redefinable
+  mattr_reader :redefinable
   # a list of all active spells
-  mattr_accessor :spells
+  mattr_reader :spells
 
   # Activate a spell.
   #
@@ -23,10 +23,11 @@ module Metamorphosis
   end
 
   def self.extended base
-    self.receiver    = base
-    self.base_path   = receiver_base_path
-    self.spells_path = Pathname.new(self.base_path.to_s + "/" + "spells")
-    self.spells      = []
+    @@receiver    = base
+    @@base_path   = receiver_base_path
+    @@spells_path = Pathname.new(@@base_path.to_s + "/" + "spells")
+    @@spells      = []
+    @@redefinable = {}
 
     # TODO
     # at this point, read metamorphosis config file (.metamorphosis.yml)
@@ -43,9 +44,8 @@ module Metamorphosis
 
     # store each module/class const under the receiver, discarding Spells btw
     # TODO: take options :only and :except in account
-    self.redefinable = {}
-    self.receiver.fetch_nested(recursive: true) do |e|
-      self.redefinable[e] ||= [] unless e.name =~ /#{self.receiver}::Spells/
+    @@receiver.fetch_nested(recursive: true) do |e|
+      @@redefinable[e] ||= [] unless e.name =~ /#{@@receiver}::Spells/
     end
   end
 
@@ -70,7 +70,7 @@ module Metamorphosis
 
     # first, load the spell
     begin
-      spell_path = Pathname.new(self.spells_path.to_s + "/" + spell_name.downcase)
+      spell_path = Pathname.new(@@spells_path.to_s + "/" + spell_name.downcase)
       require spell_path.to_s
     rescue LoadError => e
       puts e
@@ -79,7 +79,7 @@ module Metamorphosis
     
     # then, fetch the spell const
     begin
-      spell = self.receiver.constant("Spells").constant(spell_name)
+      spell = @@receiver.constant("Spells").constant(spell_name)
     rescue => e
       puts e
       abort "Invalid definition for spell \"#{spell_name}\". Please check #{spell_path.to_s + ".rb"}"
@@ -89,29 +89,29 @@ module Metamorphosis
     spell.fetch_nested(recursive: true, only: :modules) do |e|
       # let's say e is Receiver::Spells::ASpell::AModule::Nested::Again,
       e = e.name.split("::")[3..-1].join("::")
-      e = self.receiver.constant e
+      e = @@receiver.constant e
       # now e is referencing Receiver::AModule::Nested::Again
 
-      self.redefinable[e] << self.receiver.constant("Spells").constant(spell_name) if self.redefinable.has_key? e
+      @@redefinable[e] << @@receiver.constant("Spells").constant(spell_name) if @@redefinable.has_key? e
       
       if options[:retroactive]
-        ObjectSpace.each_object(e) { |x| p self.activate_on_instance x }
+        ObjectSpace.each_object(e) { |x| p activate_on_instance x }
       end
 
-      e.extend self::RedefInit
+      e.extend RedefInit
     end
 
-    self.spells << spell_name
+    @@spells << spell_name
 
     # TODO: unpack as an alternative to the default hook processing
     #spell.unpack if spell.respond_to?(:unpack)
   end
 
   def self.activate_on_instance instance
-    const = self.receiver.constant instance.class.name.split("::")[1..-1].join("::")
-    self.redefinable[const].each do |spell_module|
+    const = @@receiver.constant instance.class.name.split("::")[1..-1].join("::")
+    @@redefinable[const].each do |spell_module|
       instance.extend(spell_module.constant(const.name.split("::")[1..-1].join("::")))
-    end unless self.redefinable[instance.class].empty?
+    end unless @@redefinable[instance.class].empty?
   end
 
   # This module is responsible for extending class instances with
