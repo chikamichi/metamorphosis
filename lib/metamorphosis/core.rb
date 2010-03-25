@@ -254,7 +254,7 @@ module Metamorphosis
   #
   # @param [Const] name a valid receiver constant
   # @return [String] the sub-string corresponding to the inner spell module
-  def inner_spell_module_from name
+  def self.inner_spell_module_from name
     begin
       receiver_constant_for name # check validity
       return name.split("::")[3..-1].join("::")
