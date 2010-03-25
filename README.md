@@ -1,6 +1,7 @@
 # Metamorphosis. Kykeons, spells, plugins, whatever?
 
-Note: you may want to read this file on [rdoc.info](http://rdoc.info/projects/chikamichi/metamorphosis "YARDoc.org").
+* **home and code**: [github.com/chikamichi/metamorphosis](http://github.com/chikamichi/metamorphosis "Github.com")
+* **documentation**: [rdoc.info](http://rdoc.info/projects/chikamichi/metamorphosis "YARDoc.org")
 
 ## Synopsis
 
@@ -19,7 +20,7 @@ your running instance with some very specific features only you care about;
 * you wrote a script which would benefit of being able to modify its behavior at
 on a per-module or per-class basis.
 
-## First example
+## Basic usage
 
 Let's look at a common pattern:
 
@@ -95,8 +96,18 @@ that explicit and open an `InstanceMethods` module. Then, we talk backward!
 We could have merely redefine `say` but instead, we called `super` with a new
 argument. It's just to illustrate how cool is this: `super`. No. More. Aliasing.
 
-This example is a bit verbose as there's only one redefinition, yet it should
-feel confortable and have you started.
+This example is a bit verbose as there's only one redefinition, unnecessarily nested
+structure, yet it should get you started.
+
+## Install
+
+    [sudo] gem install metamorphosis
+
+Don't forget to discard `sudo` if you use [RVM](http://rvm.beginrescueend.com "Ruby Version Manager").
+
+Then use it with:
+
+    require 'metamorphosis'
 
 ## Inheritance everywhere!
 

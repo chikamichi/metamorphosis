@@ -26,7 +26,9 @@ module Metamorphosis
     caller_locations.map { |file,line| file }
   end
 
-  def self.instance_base_path
-    Pathname.new(caller_files.first).realpath.dirname.to_s
+  # returns the full path of the script which Metamorphosis has
+  # been called from by Receiver.extend Metamorphosis.
+  def self.receiver_base_path
+    Pathname.new(caller_files.first).realpath.dirname
   end
 end
