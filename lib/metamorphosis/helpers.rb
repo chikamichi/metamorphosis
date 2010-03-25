@@ -6,6 +6,8 @@ module Metamorphosis
   # stollen from Sinatra:
   
   # TODO/FIXME: add configuration option to add custom callers regexp
+
+  # paths to be ignored when looking for the receiver's path
   CALLERS_TO_IGNORE = [
     /\/metamorphosis(\/(core|helpers))?\.rb$/, # all metamorphosis code
     #/\(.*\)/, # any generated code
@@ -17,17 +19,19 @@ module Metamorphosis
 
   def self.caller_locations
     caller.map    { |line| line.split(/:(?=\d|in )/)[0,2] }
-    .reject { |file, line| CALLERS_TO_IGNORE.any? { |pattern| file =~ pattern } }
+          .reject { |file, line| CALLERS_TO_IGNORE.any? { |pattern| file =~ pattern } }
   end
 
   # Like Kernel#caller but excluding certain magic entries and without
-  # line / method information; the resulting array contains filenames only
+  # line/method information; the resulting array contains filenames only
+  #
+  # @see caller_locations
   def self.caller_files
     caller_locations.map { |file,line| file }
   end
 
-  # returns the full path of the script which Metamorphosis has
-  # been called from by Receiver.extend Metamorphosis.
+  # Returns the full path of the script {Metamorphosis} has
+  # been called from, using `extend Metamorphosis`.
   def self.receiver_base_path
     Pathname.new(caller_files.first).realpath.dirname
   end
