@@ -72,7 +72,7 @@ Here's how the Backward plugin is defined:
     # ./spells/backward.rb
     module MyProject
       module Spells
-        module Foo
+        module FooBar
           module Speaker
             module InstanceMethods
               def say something
