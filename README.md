@@ -79,7 +79,7 @@ Here's how the Backward plugin is defined:
 # ./spells/backward.rb
 module Conference
   module Spells
-    module FooBar
+    module Client
       module Speaker
         module InstanceMethods
           def say(something)
@@ -96,15 +96,15 @@ Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default
 it can easily be changed to any custom value, allowing you to tailor the DSL to your
 needs.
 
-So you basically just created `MyProject` and a new `Spells` module, then open module(s) which name(s)
-is(are) the same as whatever receiver's module(s) or class(s) you want to hook-in (`Speaker`).
-Here comes a piece of *Convention*: we want to modify instances behavior, so let's make
-that explicit and open an `InstanceMethods` module. Then, we talk backward!
+So you basically just created `Conference` and a new `Spells` module, then open modules which names
+mimics receiver's modules or classes you want to hook-in (here, `Client::Speaker`).
+Then comes a piece of *Convention*: as we want to modify *instances* behavior, we state our intent
+explicitily by opening a `InstanceMethods` module. Then, we're able to talk backward!
 
-We could have merely redefine `say` but instead, we called `super` with a new
-argument. It's just to illustrate how cool is this: `super`. No. More. Aliasing.
+So what next? We could have merely redefined `say` but instead, we called `super` with a new
+argument. It's just to illustrate how cool is this: `super`. No. More. Aliasing. Or messy injection.
 
-This example is a bit verbose as there's only one redefinition, unnecessarily nested
+This example is a bit verbose as there's only one redefinition, and an unnecessarily nested
 structure, yet it should get you started.
 
 ## Install
