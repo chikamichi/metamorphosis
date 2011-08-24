@@ -1,4 +1,6 @@
-# This module, the main one, is responsible for all hooks setup and extension mechanisms. Therefore, if you have a module or a class which would benefit from Metamorphosis features, just extend {Metamorphosis}:
+# This module, the main one, is responsible for all hooks setup and extension mechanisms.
+# Therefore, if you have a module or a class which would benefit from Metamorphosis
+# features, just extend {Metamorphosis}:
 #
 #     MyProject.extend Metamorphosis
 #
@@ -8,18 +10,23 @@
 #       extend Metamorphosis
 #     end
 #
-# By extending {Metamorphosis}, `MyModule` is able to call {Metamorphosis#activate activate} and a bunch of `attr_reader` as class methods:
+# By extending {Metamorphosis}, `MyModule` is able to call {Metamorphosis#activate activate}
+# and a bunch of `attr_reader` as class methods:
 #
 # * `receiver` (would return `MyProject` constant, ie. `self`)
-# * `base_path` (Pathname path of the directory of the file where `MyProject` extended {Metamorphosis})
+# * `base_path` (Pathname path of the directory of the file where `MyProject` extended
+#   {Metamorphosis})
 # * `spells_path` (Pathname path of the spells root directory)
-# * `redefinable` (list of all `MyProject`'s modules and classes spells may be defined against, ie. the public API from Metamorphosis standing point)
+# * `redefinable` (list of all `MyProject`'s modules and classes spells may be defined against,
+#   ie. the public API from Metamorphosis standing point)
 # * `spells` (list of all activated spells for `MyProject`).
 #
-# Be aware of the fact that, since {Metamorphosis} is extended, the receiver does not gain {Metamorphosis} class methods, which are part of the private API somehow. They are documented nontheless so as to give you some more hints about {Metamorphosis} internals.
+# Be aware of the fact that, since {Metamorphosis} is extended, the receiver does not gain
+# {Metamorphosis} class methods, which are part of the private API somehow. They are
+# documented nontheless so as to give you some more hints about {Metamorphosis} internals.
 module Metamorphosis
   extend self
-  
+
   class MetamorphosisError < StandardError; end
 
   # the module or class extending Metamorphosis
@@ -113,7 +120,7 @@ module Metamorphosis
         puts e
         abort "You tried to load a spell which does not exist (#{spell_name})."
       end
-      
+
       # then, fetch the spell const
       begin
         spell = @@receiver.constant("Spells").constant(spell_name)
@@ -133,7 +140,7 @@ module Metamorphosis
           # let's say e is Receiver::Spells::ASpell::AModule::Nested::Again,
           e = e.name.split("::")[3..-1]
           # now e is AModule::Nested::Again
-          
+
           # some special cases related to "Convention over Configuration"
           case e.last
           when "InstanceMethods"
@@ -191,7 +198,7 @@ module Metamorphosis
         else
           # this module does not exist within the receiver
           #puts "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ Connard"
-        end 
+        end
       end
 
       @@spells << spell_name
@@ -208,10 +215,9 @@ module Metamorphosis
 
   # Retrieve the constant under the receiver namespace for a given name.
   # Handles nested namespaces. This method does not perform any smart
-  # look-up, that is name must be a full [nested] namespace[s] path under
+  # look-up, hence name must be a *complete* [nested] namespace[s] path under
   # the receiver's domain.
   #
-  # Valid uses:
   # Given the following structure:
   #
   #     module Base
@@ -224,11 +230,15 @@ module Metamorphosis
   #       end
   #     end
   #
-  #     receiver_constant_for("Foo")
-  #     receiver_constant_for("Foo::Bar")
-  #     receiver_constant_for("Base::Foo::Bar::ChunkyBacon")
+  # and calls performed inside +Base+:
   #
-  # Invalid uses:
+  # @example Valid use-cases
+  #
+  #     receiver_constant_for("Foo") # => Base::Foo
+  #     receiver_constant_for("Foo::Bar") # => Base::Foo::Bar
+  #     receiver_constant_for("Base::Foo::Bar::ChunkyBacon") # => Base::Foo::Bar::ChunkyBacon
+  #
+  # @example Invalid use-cases
   #
   #     receiver_constant_for("Bar")
   #     receiver_constant_for("Bar::ChunkyBacon")
@@ -237,7 +247,8 @@ module Metamorphosis
   # @option *syms [Boolean] :full_path (false) by default, the method gets rid of
   #   conventional namespaces (`InstanceMethods` and `ClassMethods`). Setting this
   #   option to `true` disable this behavior.
-  # @return [Const, nil] a valid path constant under the receiver or `nil` (therefore the method can be used for testing purpose)
+  # @return [Const, nil] a valid path constant under the receiver or `nil`
+  #
   def self.receiver_constant_for name, *syms
     options = syms.extract_options!
     name = name.join("::") if name.is_a? Array
@@ -254,6 +265,7 @@ module Metamorphosis
   #
   # @param [Const] name a valid receiver constant
   # @return [String] the sub-string corresponding to the inner spell module
+  #
   def self.inner_spell_module_from name
     begin
       receiver_constant_for name # check validity
@@ -270,17 +282,19 @@ module Metamorphosis
   # @param [Object] instance the instance the spell will be activated for
   # @param [String] spell_name the spell name (eg. `"MyPlugin"`)
   # @param [Array(String)] spell_module the relative path of the spell module from spell root (eg. `["Foo", "Bar"]`)
+  #
   def self.activate_on_instance instance, spell_name, spell_module
     instance.extend receiver_constant_for("Spells").constant(spell_name).constant(spell_module.join("::"))
   end
 
   # This module is responsible for extending forthcoming class instances with
   # the new behavior defined by relevant spell(s). It's the responsability
-  # of the spells to call <tt>super</tt> so as to fallback on original
+  # of the spells to call +super+ so as to fallback on original
   # behavior: this module only has the auto-hooks up and runing.
   #
-  # In order to have instances existing prior to the plugin activation, one 
-  # should pass the <tt>:retroactive</tt> option to {Metamorphosis#activate}.
+  # In order to have instances existing prior to the plugin activation, one
+  # should pass the +:retroactive+ option to {Metamorphosis#activate}.
+  #
   module RedefInit
     # Redefine initialize/new so as to call extend [spells] on new
     # instances. This allows for per-instance behavior redefinitions.
@@ -301,7 +315,7 @@ module Metamorphosis
       # tree leaves, and hierarchy for free.
       Metamorphosis.redefinable[self].each do |spell, modes|
         if modes.include? :instance_methods
-          o.extend(spell.constant(self.name.split("::")[1..-1].join("::")).constant("InstanceMethods")) 
+          o.extend(spell.constant(self.name.split("::")[1..-1].join("::")).constant("InstanceMethods"))
         end
       end unless Metamorphosis.redefinable[self].empty?
 
@@ -309,7 +323,7 @@ module Metamorphosis
     end
 
     # TODO: handle case when object instanciation is not made using
-    # initialize but a custom instance method
+    # initialize/#new, but a custom instance method
   end
 end
 

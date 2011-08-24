@@ -14,8 +14,10 @@ module Project
       # Auquel cas, modifier en conséquence le hooking automatique dans Pluginable#activate etc.
       # module Base
       module Speaker
-        def say what
-          super what.reverse
+        module InstanceMethods
+          def say what
+            super what.reverse
+          end
         end
       end
       #end

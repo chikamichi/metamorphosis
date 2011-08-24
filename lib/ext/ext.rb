@@ -1,10 +1,12 @@
 class Object
-  # Nice little hack allowing to unextend modules
-  # http://gist.github.com/149878
-  # http://www.ruby-forum.com/topic/150696
+  # Nice little hack allowing to unextend modules.
+  #
+  # @see http://gist.github.com/149878
+  # @see http://www.ruby-forum.com/topic/150696
+  #
   def unextend
     self.replace dup
-  end 
+  end
 
   # Look out for any class and/or module defined within the receiver.
   # The receiver must be a class or a module.
@@ -22,6 +24,8 @@ class Object
   # Beware that when using the block form, the same element may be yielded
   # several times, depending on inclusions and requirements redundancy.
   # The flat array contains uniq entries.
+  # # TODO: monitor yielded elements and yield uniq
+  #
   def fetch_nested(*args)
     options = {:recursive => false, :only => false}.merge! Hash[*args]
     #unless (options.reject { |k, v| [:recursive, :only].include? k }).empty?

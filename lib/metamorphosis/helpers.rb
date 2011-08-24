@@ -4,8 +4,8 @@ module Metamorphosis
   # of Metamorphosis local "circe" (by default) configuration directory.
 
   # stollen from Sinatra:
-  
   # TODO/FIXME: add configuration option to add custom callers regexp
+  # TODO: update this code chunk (see sinatra/lib/sinatra/base.rb)
 
   # paths to be ignored when looking for the receiver's path
   CALLERS_TO_IGNORE = [
@@ -31,7 +31,8 @@ module Metamorphosis
   end
 
   # Returns the full path of the script {Metamorphosis} has
-  # been called from, using `extend Metamorphosis`.
+  # been called from, following the `extend Metamorphosis`
+  # instruction.
   def self.receiver_base_path
     Pathname.new(caller_files.first).realpath.dirname
   end

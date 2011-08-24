@@ -1,7 +1,6 @@
 require 'metamorphosis'
 
 module Project
-
   VERSION = 0.1
 
   class Speaker
@@ -31,7 +30,7 @@ module Project
     s2 = Project::Speaker.new
     puts "new object: #{s2.say 'hello world'}"
     puts
-    
+
     puts "loudness + backward plugin:"
     Project.activate 'loudness'
     p Project::Speaker.new.say "super loud!"
@@ -45,7 +44,3 @@ module Project
 end
 
 Project::Server.new
-
-# TODO
-# specs!
-
