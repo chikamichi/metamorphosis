@@ -11,13 +11,13 @@ in a standardized, programmer-friendly way.
 
 Typical use-cases:
 
-* you wrote a tiny yet powerful application, and would like to be able to extend
+* you wrote a tiny application and would like to be able to extend
 its functionnalities without clutering the code base with loads of specific stuff;
 * you wrote your very own CMS and would like your users to be able to write and
 share some plugins;
-* you are using software someone else wrote and would like to be able to customize
+* you are using software written by someone else and would like to be able to customize
 your running instance with some very specific features only you care about;
-* you wrote a script which would benefit of being able to modify its behavior at
+* you wrote a script which would benefit of being able to modify its behavior at runtime,
 on a per-module or per-class basis.
 
 ## Basic usage
