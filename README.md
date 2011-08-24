@@ -73,7 +73,8 @@ end
 MyProject::Server.start # let the conference start!
 ```
 
-Here's how the Backward plugin is defined:
+Here's how the Backward plugin is defined. This example is a bit verbose as there's only one redefinition,
+and an unnecessarily nested modules structure, yet it should get you started.
 
 ``` ruby
 # ./spells/backward.rb
@@ -92,20 +93,17 @@ module Conference
 end
 ```
 
-Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default, but
+Metamorphosis brands as "spells" what you may call *plugins*. That's the default name, but
 it can easily be changed to any custom value, allowing you to tailor the DSL to your
 needs.
 
 So you basically just created `Conference` and a new `Spells` module, then open modules which names
 mimics receiver's modules or classes you want to hook-in (here, `Client::Speaker`).
-Then comes a piece of *Convention*: as we want to modify *instances* behavior, we state our intent
-explicitily by opening a `InstanceMethods` module. Then, we're able to talk backward!
+Then comes a piece of convention: as we want to modify *instances* behavior, we state our intent
+explicitily by opening a `InstanceMethods` module.
 
-So what next? We could have merely redefined `say` but instead, we called `super` with a new
-argument. It's just to illustrate how cool is this: `super`. No. More. Aliasing. Or messy injection.
-
-This example is a bit verbose as there's only one redefinition, and an unnecessarily nested
-structure, yet it should get you started.
+We could have then merely redefined the `say` method but instead, we call `super` with a new
+argument. Then, we're able to talk backward!
 
 ## Install
 
@@ -117,24 +115,20 @@ Then use it with:
 
     require 'metamorphosis'
 
-## Inheritance everywhere!
+## Inheritance everywhere
 
 Traditionnal plugins solutions wants you to manage some aliasing and make it hard
 to fallback on original behavior should you want to. Metamorphosis ships with a
 clean extension mechanism which handle both class and instance behavior redefinition
 on-the-fly.
 
-    code example pending
-
 Metamorphosis relies on the power of Ruby's mixin and `extend` method to design
 a powerful inheritance chain around your objects. To learn more about the nitty-gritty
 details, see the section "Under the hood" below.
 
-## Just write the code you care about
-
 Metamorphosis aims at making the process of writing plugins dead-simple. Using some
 smart *Convention Over Configuration* rules, it allows you to focus on the plugin's
-code. If you abide by the defaults, only three things are of your responsibility:
+code. If you abide by the defaults, only three simple things are of your responsibility:
 
 1. write some plugin of your own kind, targeting a "receiver" to hook into
 2. declare that you want to use Metamorphosis in the specific receiver
@@ -148,45 +142,41 @@ their original behaviors via simple inheritance (think `super`).
 
 ## Customize the hooks
 
-Given a smart plugin definition, Metamorphosis will automagically find class and
+Given a standard plugin definition, Metamorphosis will automagically find class and
 instance methods in their proper location within the receiver. Yet there are some
 times when you want to gain control over the process, so you can actually get rid
 of the *Convention* and dive into the *Configuration*.
 
 You may:
 * specify your very own merging process between the receiver and the plugin (you
-may use the pretty common idioms of `send :extend, SomeMethods` Rails teached you
-about, or do it some other way)
+may use the pretty common idioms of `send :extend, SomeMethods`, or do it some other way);
 * tweak with the configuration so as to streamline which parts of the receiver
 can actually be altered by the plugins, or even compose a hydra-like receiver,
 gathering otherwise unrelated pieces of your software.
 
 ## A few words about the DSL, Ancient Greek cuisine and security
 
-Everybody's familiar with the notion of metamorphose. A differentiation
-process turns some entity into another, while retaining its identity. Was
+Everybody should be familiar with the notion of metamorphose: a differentiation
+process turning some entity into another, while retaining its core identity. Was
 Mr Hyde some kind of plugin to Dr Jekyll? What about Lepidopteras?
 
 In Greek mythology, Circe is a minor goddess of magic famous for her ability
-to use meals as metamorphose spells. She used to share kykeon, a mix between a
+to use meals as metamorphose spells. She used to share *kykeon*, a mix between a
 beverage and a meal, to hide her poisons and charms.
 
-I retained the phrasing of "spells" to designate what are mostly "plugins". Yet,
+I retained the wording of "spells" to designate what are mostly "plugins". Yet,
 Metamorphosis is not *really* about plugins. It's more about extending "something"
-you want with **new** or **modified** behaviors. Plugins *add* functionalities,
-so the semantics is quite non-destructive: one doesn't want a *plug-in* to turn the
-master into a crank, or make the base explode, or *break the software*. Metamorphosis
-does not make such an assumption and lets you do merely anything to your "something".
-It's a general-purpose metamorphose system.
+with **new** or **modified** behaviors. Plugins often *add* functionalities,
+so the semantics is quite non-destructive, but Metamorphosis does not make such an
+assumption and lets you do merely anything to your "something".
+**It's a general-purpose metamorphose system**.
 
-Advice, then: if you want to use it as a **solid** plugins system, you may want to
+Advice, then: if you want to use it as a **solid** extension mechanism, you may want to
 add some control on top of it (be it automatic or by peer-reviewing). Forthcoming
 refinements on the quantity of information Metamorphosis shares with the receiver
 should allow you to perform fine-checks, wait & see.
 
-## Care about your parents, they made you (or not?)
-
-Yet plugins are cool stuff and we hardly eat kykeon nowadays, so let's talk about
+Yet, plugins are cool and we hardly eat kykeon nowadays, so let's talk about
 plugins anyway.
 
 If several plugins are activated and each one of them performs some behavior
