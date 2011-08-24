@@ -22,73 +22,81 @@ on a per-module or per-class basis.
 
 ## Basic usage
 
-Let's look at a common pattern:
+Let's look at a common pattern: desiging a plugin system for your project named Conference.
+It allows speakers to register to a conference server to broadcast their talks live (or
+something like that, I lost the specs anyway). As some specific speakers have specific needs,
+a plugin system would be nice. I removed (inexistent yet) powerful parts of the Conference app
+so as to focus on what's relevant for illustrating the plugin system.
 
-    # ./myproject.rb
-    require 'metamorphosis'
+``` ruby
+# ./conference.rb
+require 'metamorphosis'
 
-    module MyProject
-      # So let's say a plugins system would be nice for MyProject...
+module Conference
+  extend Metamorphosis
 
-      extend Metamorphosis
+  # At this point, Conference's internals are exposed in a standardized way
+  # to Metamorphosis' own DSL. Both the Speaker and Server modules defined below
+  # can be altered by plugins (default behaviour, highly customizable though!).
 
-      # By extending MMP, MyProject gains some new functionalities related to plugins definition.
-      # At this point, MyProject's internals are exposed in a standardized way
-      # to Metamorphosis DSL. Both Speaker and Server modules can be altered
-      # by plugins (by default, highly customizable).
-
-      module FooBar
-        module Speaker
-          def say something
-            puts "#{something}"
-          end
-        end
-      end
-
-      module Server
-        def self.start
-          a = Speaker.new
-          a.say "hello world!" # => hello world!
-
-          # Ok, talking backward is cool. Let's do that.
-          MyProject.activate "backward"
-
-          a.say "hello world again!" # => hello world again!
-          # Goodness me!
-          # Well, actually, the Backward plugin affects Speaker's instances,
-          # but only those defined from the time it is activated on.
-          # If you want to catch previously existing instances, call:
-          # MyProject.activate "backward", :retroactive => true
-
-          Speaker.new.say "hello then" # => neht olleh
-        end
+  module Client
+    # There will be only one, hard-coded speaker for the sake of the example (!).
+    module Speaker
+      def say(something)
+        puts "A speaker says: #{something}"
       end
     end
+  end
 
-    MyProject::Server.start # see outputs as inline comments above
+  module Server
+    def self.start
+      a = Speaker.new # wake up our one and only speaker
+      a.say "hello world!" # => hello world!
+
+      # It seems this speaker likes to talk backward. Let's do that.
+      MyProject.activate "backward"
+
+      a.say "hello world again!" # => hello world again!
+      # Goodness me!
+      # Well, actually, the Backward plugin affects Speaker's instances,
+      # but only those defined from the time it is activated on.
+      # If you want to catch previously existing instances, call:
+      # MyProject.activate "backward", :retroactive => true
+      # Here, we're gonna wake up the real backward-speaker, as the previous
+      # one was just the guy checking mics.
+      
+      Speaker.new.say "hello then" # => neht olleh
+    end
+  end
+end
+
+MyProject::Server.start # let the conference start!
+```
 
 Here's how the Backward plugin is defined:
 
-    # ./spells/backward.rb
-    module MyProject
-      module Spells
-        module FooBar
-          module Speaker
-            module InstanceMethods
-              def say something
-                super something.reverse
-              end
-            end
+``` ruby
+# ./spells/backward.rb
+module Conference
+  module Spells
+    module FooBar
+      module Speaker
+        module InstanceMethods
+          def say(something)
+            super(something.reverse)
           end
         end
       end
     end
+  end
+end
+```
 
 Metamorphosis calls "Spells" what you may brand as *plugins*. That's the default, but
 it can easily be changed to any custom value, allowing you to tailor the DSL to your
 needs.
 
-So you just open `MyProject` and a new `Spells` module, then open module(s) which name(s)
+So you basically just created `MyProject` and a new `Spells` module, then open module(s) which name(s)
 is(are) the same as whatever receiver's module(s) or class(s) you want to hook-in (`Speaker`).
 Here comes a piece of *Convention*: we want to modify instances behavior, so let's make
 that explicit and open an `InstanceMethods` module. Then, we talk backward!
@@ -116,23 +124,23 @@ to fallback on original behavior should you want to. Metamorphosis ships with a
 clean extension mechanism which handle both class and instance behavior redefinition
 on-the-fly.
 
-    code...
+    code example pending
 
 Metamorphosis relies on the power of Ruby's mixin and `extend` method to design
 a powerful inheritance chain around your objects. To learn more about the nitty-gritty
-details, see the section "Under the hood".
+details, see the section "Under the hood" below.
 
 ## Just write the code you care about
 
 Metamorphosis aims at making the process of writing plugins dead-simple. Using some
 smart *Convention Over Configuration* rules, it allows you to focus on the plugin's
-code. If you abide by the defaults, only three things are your responsibility:
+code. If you abide by the defaults, only three things are of your responsibility:
 
-1. write some plugin of your own kind targeting a "receiver"
-2. declare that you want to use Metamorphosis for the specific receiver
-3. activate your plugin!
+1. write some plugin of your own kind, targeting a "receiver" to hook into
+2. declare that you want to use Metamorphosis in the specific receiver
+3. activate your plugin in the receiver!
 
-A simple convention in plugins definitions makes it possible to auto-discover
+A simple convention with plugins definition makes it possible to auto-discover
 which internal modules or classes of the receiver are concerned by the plugin.
 Once the plugin is be activated, it will outfit its targets with new or
 revamped behavior, while retaining the ability to fallback on
@@ -193,16 +201,14 @@ call `super` and will be the first activated plugin.
 
 ## Under the hood
 
-*Pending*.
+*Pending smart text*.
 
 ## Caveats
 
 * It is not possible to deactivate a plugin at the present time, without bootstraping
   the receiver again. Hard work forthcoming, as it's not an easy process.
-* The TODO list is not empty!
-* Test-Driven Development is all about writing the tests *before*. Is it?
 
-## Note on Patches/Pull Requests
+## Contributing
  
 * Fork the project.
 * Make your feature addition or bug fix.
