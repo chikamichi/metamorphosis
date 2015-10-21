@@ -1,3 +1,5 @@
+![unmaintained](http://img.shields.io/badge/status-unmaintained-red.png)
+
 # Metamorphosis. Kykeons, spells, plugins, whatever?
 
 * **home and code**: [github.com/chikamichi/metamorphosis](http://github.com/chikamichi/metamorphosis "Github.com")
